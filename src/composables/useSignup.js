@@ -13,7 +13,7 @@ const signup = async (email, password, displayName) => {
     }
     await res.user.updateProfile({ displayName })
     error.value = null
-    
+
     return res
   }
   catch(err) {
