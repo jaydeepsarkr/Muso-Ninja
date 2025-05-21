@@ -1,24 +1,26 @@
-import { ref } from 'vue'
-import { projectAuth } from '../firebase/config'
+import { ref } from "vue";
+import { getAuth, signOut } from "firebase/auth";
 
 // refs
-const error = ref(null)
+const error = ref(null);
+
+// auth instance
+const auth = getAuth();
 
 // logout function
 const logout = async () => {
-  error.value = null
+  error.value = null;
 
   try {
-    await projectAuth.signOut()
+    await signOut(auth);
+  } catch (err) {
+    console.log(err.message);
+    error.value = err.message;
   }
-  catch(err) {
-    console.log(err.message)
-    error.value = err.message
-  }
-}
+};
 
 const useLogout = () => {
-  return { error, logout }
-}
+  return { error, logout };
+};
 
-export default useLogout
+export default useLogout;
