@@ -1,20 +1,18 @@
 import { ref } from "vue";
-import { getAuth, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
+import { projectAuth } from "../firebase/config"; // use the correct import
 
 // refs
 const error = ref(null);
-
-// auth instance
-const auth = getAuth();
 
 // logout function
 const logout = async () => {
   error.value = null;
 
   try {
-    await signOut(auth);
+    await signOut(projectAuth);
   } catch (err) {
-    console.log(err.message);
+    console.error(err.message);
     error.value = err.message;
   }
 };

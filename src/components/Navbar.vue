@@ -9,17 +9,21 @@
         <router-link :to="{ name: 'Home' }">Muso</router-link>
       </h1>
       <div class="links">
-        <button @click="handleLogout">Logout</button>
-        <router-link
-          :to="{ name: 'Login' }"
-          class="btn"
-          >Login</router-link
-        >
-        <router-link
-          :to="{ name: 'Signup' }"
-          class="btn"
-          >Sign Up</router-link
-        >
+        <div v-if="user">
+          <button @click="handleLogout">Logout</button>
+        </div>
+        <div v-else>
+          <router-link
+            :to="{ name: 'Login' }"
+            class="btn"
+            >Login</router-link
+          >
+          <router-link
+            :to="{ name: 'Signup' }"
+            class="btn"
+            >Sign Up</router-link
+          >
+        </div>
       </div>
     </nav>
   </div>
@@ -27,11 +31,18 @@
 
 <script>
   import useLogout from "@/composables/useLogout";
+  import getUser from "@/composables/getUser";
   import { useRouter } from "vue-router";
 
   export default {
     name: "Navbar",
     setup() {
+      const { user } = getUser();
+      // if (!user.value) {
+      //   // console.log("User not found");
+      //   // return;
+      // }
+      // console.log("User found", user.value);
       const { logout } = useLogout();
       const router = useRouter();
 
@@ -43,6 +54,7 @@
 
       return {
         handleLogout,
+        user,
       };
     },
   };

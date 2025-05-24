@@ -7,6 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
     "@vue/compiler-sfc": "^3.5.13",
     "core-js": "^3.8.3",
     "firebase": "^11.7.1",
