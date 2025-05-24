@@ -10,6 +10,11 @@
       </h1>
       <div class="links">
         <div v-if="user">
+          <router-link
+            :to="{ name: 'CreatePlaylist' }"
+            class="btn"
+            >Create Playlist</router-link
+          >
           <button @click="handleLogout">Logout</button>
         </div>
         <div v-else>

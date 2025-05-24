@@ -1,39 +1,49 @@
 import { ref, watchEffect } from "vue";
-import { projectFirestore } from "../firebase/config";
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 
-const getCollection = (collection) => {
+// Firestore instance (you can also export this from your firebase/config.js)
+const db = getFirestore();
+
+const getCollection = (collectionName) => {
   const documents = ref(null);
   const error = ref(null);
 
-  // register the firestore collection reference
-  let collectionRef = projectFirestore
-    .collection(collection)
-    .orderBy("createdAt");
+  // Create the query for Firestore
+  const q = query(collection(db, collectionName), orderBy("createdAt"));
 
-  const unsub = collectionRef.onSnapshot(
-    (snap) => {
-      let results = [];
-      snap.docs.forEach((doc) => {
-        // must wait for the server to create the timestamp & send it back
-        doc.data().createdAt && results.push({ ...doc.data(), id: doc.id });
+  // Real-time listener
+  const unsub = onSnapshot(
+    q,
+    (snapshot) => {
+      const results = [];
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data();
+        if (data.createdAt) {
+          results.push({ ...data, id: doc.id });
+        }
       });
-
-      // update values
       documents.value = results;
       error.value = null;
     },
     (err) => {
-      console.log(err.message);
+      console.error("Firestore error:", err.message);
       documents.value = null;
-      error.value = "could not fetch the data";
+      error.value = "Could not fetch the data";
     }
   );
 
+  // Cleanup Firestore listener when component unmounts
   watchEffect((onInvalidate) => {
     onInvalidate(() => unsub());
   });
 
-  return { error, documents };
+  return { documents, error };
 };
 
 export default getCollection;

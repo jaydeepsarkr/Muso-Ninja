@@ -31,12 +31,19 @@
 <script>
   import { ref } from "vue";
   import useStorage from "@/composables/useStorage";
+  import getUser from "@/composables/getUser";
   import { projectFirestore, timestamp } from "@/firebase/config";
   import { collection, addDoc } from "firebase/firestore";
 
   export default {
     setup() {
+      // const isPending = ref(false);
       const { filePath, url, uploadImage } = useStorage();
+      const { user } = getUser();
+      if (!user) {
+        throw new Error("User must be logged in to create a playlist.");
+      }
+      // console.log("user in create playlist:", user);
       const title = ref("");
       const description = ref("");
       const file = ref(null);
@@ -57,6 +64,7 @@
         isUploading.value = true;
 
         try {
+          // isPending.value = true;
           // Upload image to Supabase
           await uploadImage(file.value);
 
@@ -70,9 +78,14 @@
             description: description.value,
             coverUrl: url.value,
             createdAt: timestamp,
+            userId: user.value.uid,
+            userName: user.value.displayName || "Anonymous",
+            filePath: filePath.value,
+            songs: [],
           });
 
           console.log("Playlist created with image:", url.value);
+          // isPending.value = false;
           resetForm();
         } catch (error) {
           console.error("Error creating playlist:", error.message);
@@ -109,6 +122,7 @@
         fileError,
         handleChange,
         isUploading,
+        // isPending,
       };
     },
   };

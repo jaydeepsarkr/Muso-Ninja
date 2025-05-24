@@ -32,7 +32,7 @@ const useStorage = () => {
 
       // Get public URL
       const { data: publicUrlData, error: publicUrlError } = supabase.storage
-        .from("uploads")
+        .from("images")
         .getPublicUrl(filePath.value);
 
       if (publicUrlError) throw publicUrlError;
