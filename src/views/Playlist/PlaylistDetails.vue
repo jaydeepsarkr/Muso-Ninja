@@ -20,12 +20,21 @@
         Created by - <strong>{{ playlist.userName }}</strong>
       </p>
       <p class="description">{{ playlist.description }}</p>
-      <button
-        v-if="ownership"
-        @click="handleDelete"
-      >
-        Delete Playlist
-      </button>
+      <div class="gap">
+        <button
+          @click="playAllSongs"
+          class="btn"
+          v-if="playlist.songs.length"
+        >
+          ▶ Play All Songs
+        </button>
+        <button
+          v-if="ownership"
+          @click="handleDelete"
+        >
+          Delete Playlist
+        </button>
+      </div>
     </div>
 
     <!-- song list -->
@@ -92,7 +101,7 @@
   import useDocument from "@/composables/useDocument";
   import getDocument from "@/composables/getDocument";
   import getUser from "@/composables/getUser";
-  import { computed, ref } from "vue";
+  import { computed, ref, nextTick } from "vue";
   import { useRouter } from "vue-router";
 
   export default {
@@ -103,7 +112,7 @@
       const { user } = getUser();
       const { deleteDoc, updateDoc } = useDocument("playlists", props.id);
       const router = useRouter();
-
+      const currentSongIndex = ref(null);
       const currentAudioUrl = ref("");
       const loading = ref(false);
       const apiError = ref("");
@@ -121,7 +130,7 @@
         return match ? match[1] : null;
       };
 
-      const playSong = async (url) => {
+      const playSong = async (url, index = null) => {
         const videoId = extractVideoID(url);
         if (!videoId) {
           apiError.value = "Invalid YouTube URL.";
@@ -131,6 +140,7 @@
         loading.value = true;
         currentAudioUrl.value = "";
         apiError.value = "";
+        currentSongIndex.value = index;
 
         try {
           const res = await fetch(
@@ -149,6 +159,20 @@
 
           if (data.status === "ok" && data.link) {
             currentAudioUrl.value = data.link;
+
+            // Wait until audio element is rendered
+            await nextTick();
+            const audio = document.querySelector(".audio-player");
+            if (audio) {
+              audio.play().catch((err) => {
+                apiError.value =
+                  "Autoplay blocked by browser. Please press play.";
+                console.error("Autoplay error:", err);
+              });
+
+              // Optional: auto play next song when current ends
+              audio.onended = playNextSong;
+            }
           } else {
             apiError.value = "Failed to convert video.";
           }
@@ -156,6 +180,26 @@
           apiError.value = "API Error: " + err.message;
         } finally {
           loading.value = false;
+        }
+      };
+
+      const playAllSongs = () => {
+        if (playlist.value && playlist.value.songs.length > 0) {
+          playSong(playlist.value.songs[0].url, 0);
+        }
+      };
+
+      const playNextSong = () => {
+        if (
+          playlist.value &&
+          currentSongIndex.value !== null &&
+          currentSongIndex.value + 1 < playlist.value.songs.length
+        ) {
+          const nextIndex = currentSongIndex.value + 1;
+          playSong(playlist.value.songs[nextIndex].url, nextIndex);
+        } else {
+          currentSongIndex.value = null;
+          currentAudioUrl.value = "";
         }
       };
 
@@ -177,6 +221,8 @@
         handleDelete,
         handleClick,
         playSong,
+        playAllSongs,
+        playNextSong,
         currentAudioUrl,
         apiError,
         loading,

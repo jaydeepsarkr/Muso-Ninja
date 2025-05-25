@@ -6,7 +6,7 @@
         alt="website logo"
       />
       <h1>
-        <router-link :to="{ name: 'Home' }">Muso</router-link>
+        <router-link :to="{ name: 'Home' }">Music</router-link>
       </h1>
       <div class="links">
         <div v-if="user">
@@ -20,7 +20,9 @@
             class="btn"
             >My Playlists</router-link
           >
-          <span>Hi There, {{ user.displayName }}</span>
+          <span
+            >Hi There, <strong>{{ user.displayName }}</strong></span
+          >
           <button @click="handleLogout">Logout</button>
         </div>
         <div v-else>
@@ -108,6 +110,45 @@
     display: inline-block;
     margin-left: 16px;
     padding-left: 16px;
-    border-left: 1px solid #eee;
+    border-left: 5px solid #eee;
+    border-right: 5px solid #eee;
+  }
+  span strong {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    nav {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    nav img {
+      margin-bottom: 10px;
+    }
+
+    nav h1 {
+      margin: 0 0 10px 0;
+    }
+
+    nav .links {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      margin-left: 0;
+    }
+
+    nav .links a,
+    button,
+    span {
+      margin: 8px 0;
+      margin-left: 0;
+      font-size: 16px;
+    }
+
+    span {
+      border: none;
+      padding: 0;
+    }
   }
 </style>
