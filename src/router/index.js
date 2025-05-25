@@ -4,6 +4,7 @@ import Login from "../views/auth/Login.vue";
 import Signup from "../views/auth/Signup.vue";
 import CreatePlaylist from "../views/Playlist/CreatePlaylist.vue";
 import PlaylistDetails from "../views/Playlist/PlaylistDetails.vue";
+import UserPlaylists from "../views/Playlist/UserPlaylists.vue";
 
 import { projectAuth } from "../firebase/config";
 
@@ -49,6 +50,12 @@ const routes = [
     component: PlaylistDetails,
     beforeEnter: requireAuth, // Ensure user is authenticated before accessing this route
     props: true, // Pass route params as props to the component
+  },
+  {
+    path: "/playlists/user",
+    name: "UserPlaylists",
+    component: UserPlaylists,
+    beforeEnter: requireAuth, // Ensure user is authenticated before accessing this route
   },
 ];
 

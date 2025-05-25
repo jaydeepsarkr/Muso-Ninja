@@ -35,7 +35,7 @@
     align-items: center;
     padding: 20px;
     border-radius: 10px;
-    background: rgb(243, 241, 238);
+    background: rgb(248, 245, 245);
     margin: 16px 0;
     transition: all ease 0.2s;
   }

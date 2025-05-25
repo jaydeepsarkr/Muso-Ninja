@@ -31,11 +31,13 @@
   // using @ means start at the project src root
   import useLogin from "@/composables/useLogin";
   import { ref } from "vue";
+  import { useRouter } from "vue-router";
 
   export default {
     setup() {
       const { error, login, isPending } = useLogin();
 
+      const router = useRouter();
       const email = ref("");
       const password = ref("");
 

@@ -15,6 +15,12 @@
             class="btn"
             >Create Playlist</router-link
           >
+          <router-link
+            :to="{ name: 'UserPlaylists' }"
+            class="btn"
+            >My Playlists</router-link
+          >
+          <span>Hi There, {{ user.displayName }}</span>
           <button @click="handleLogout">Logout</button>
         </div>
         <div v-else>
@@ -96,5 +102,12 @@
   img {
     width: 60px;
     height: 60px;
+  }
+  span {
+    font-size: 14px;
+    display: inline-block;
+    margin-left: 16px;
+    padding-left: 16px;
+    border-left: 1px solid #eee;
   }
 </style>

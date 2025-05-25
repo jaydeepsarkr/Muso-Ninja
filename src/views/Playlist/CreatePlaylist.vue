@@ -30,6 +30,7 @@
 
 <script>
   import { ref } from "vue";
+  import { useRouter } from "vue-router";
   import useStorage from "@/composables/useStorage";
   import getUser from "@/composables/getUser";
   import { projectFirestore, timestamp } from "@/firebase/config";
@@ -39,6 +40,7 @@
     setup() {
       // const isPending = ref(false);
       const { filePath, url, uploadImage } = useStorage();
+      const router = useRouter();
       const { user } = getUser();
       if (!user) {
         throw new Error("User must be logged in to create a playlist.");
@@ -73,7 +75,7 @@
           }
 
           // Save playlist info to Firestore
-          await addDoc(collection(projectFirestore, "playlists"), {
+          const res = await addDoc(collection(projectFirestore, "playlists"), {
             title: title.value,
             description: description.value,
             coverUrl: url.value,
@@ -84,8 +86,12 @@
             songs: [],
           });
 
-          console.log("Playlist created with image:", url.value);
+          // console.log("Playlist created with image:", url.value);
           // isPending.value = false;
+          router.push({
+            name: "PlaylistDetails",
+            params: { id: res.id },
+          });
           resetForm();
         } catch (error) {
           console.error("Error creating playlist:", error.message);
