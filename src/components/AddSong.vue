@@ -55,7 +55,7 @@
       const title = ref("");
       const artist = ref("");
       const url = ref("");
-      const showForm = ref(false);
+      let showForm = ref(false);
       const { updateDoc } = useDocument("playlists", props.playlist.id);
 
       const handleSubmit = async () => {
@@ -74,6 +74,7 @@
         title.value = "";
         artist.value = "";
         url.value = "";
+        showForm.value = false;
       };
 
       return { title, artist, url, showForm, handleSubmit };

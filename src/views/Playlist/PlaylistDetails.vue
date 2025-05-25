@@ -5,6 +5,7 @@
   >
     {{ error }}
   </div>
+
   <div
     v-if="playlist"
     class="playlist-details"
@@ -15,7 +16,9 @@
         <img :src="playlist.coverUrl" />
       </div>
       <h2>{{ playlist.title }}</h2>
-      <p class="username">Created by {{ playlist.userName }}</p>
+      <p class="username">
+        Created by - <strong>{{ playlist.userName }}</strong>
+      </p>
       <p class="description">{{ playlist.description }}</p>
       <button
         v-if="ownership"
@@ -38,31 +41,58 @@
         <div class="details">
           <h3>{{ song.title }}</h3>
           <p>{{ song.artist }}</p>
-          <p>{{ song.url }}</p>
         </div>
-        <button class="play-btn">▶</button>
-        <button
-          v-if="ownership"
-          @click="handleClick(song.id)"
-        >
-          delete
-        </button>
+        <div class="gap">
+          <button
+            class="play-btn"
+            @click="playSong(song.url)"
+          >
+            ▶
+          </button>
+          <button
+            v-if="ownership"
+            @click="handleClick(song.id)"
+          >
+            delete
+          </button>
+        </div>
       </div>
+
       <AddSong
         :playlist="playlist"
         v-if="ownership"
       />
     </div>
+
+    <!-- Audio player and messages -->
+    <div
+      v-if="loading"
+      class="loading"
+    >
+      Loading audio...
+    </div>
+    <div
+      v-if="apiError"
+      class="error"
+    >
+      {{ apiError }}
+    </div>
+    <audio
+      v-if="currentAudioUrl"
+      :src="currentAudioUrl"
+      controls
+      autoplay
+      class="audio-player"
+    />
   </div>
 </template>
 
 <script>
   import AddSong from "@/components/AddSong.vue";
-  // import useStorage from "@/composables/useStorage";
   import useDocument from "@/composables/useDocument";
   import getDocument from "@/composables/getDocument";
   import getUser from "@/composables/getUser";
-  import { computed } from "vue";
+  import { computed, ref } from "vue";
   import { useRouter } from "vue-router";
 
   export default {
@@ -72,8 +102,11 @@
       const { error, document: playlist } = getDocument("playlists", props.id);
       const { user } = getUser();
       const { deleteDoc, updateDoc } = useDocument("playlists", props.id);
-      // const { deleteImage } = useStorage();
       const router = useRouter();
+
+      const currentAudioUrl = ref("");
+      const loading = ref(false);
+      const apiError = ref("");
 
       const ownership = computed(() => {
         return (
@@ -83,9 +116,51 @@
         );
       });
 
+      const extractVideoID = (url) => {
+        const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})(?:&|$)/);
+        return match ? match[1] : null;
+      };
+
+      const playSong = async (url) => {
+        const videoId = extractVideoID(url);
+        if (!videoId) {
+          apiError.value = "Invalid YouTube URL.";
+          return;
+        }
+
+        loading.value = true;
+        currentAudioUrl.value = "";
+        apiError.value = "";
+
+        try {
+          const res = await fetch(
+            `https://youtube-mp36.p.rapidapi.com/dl?id=${videoId}`,
+            {
+              method: "GET",
+              headers: {
+                "X-RapidAPI-Key":
+                  "da0bbb2e99msh7e80c2ea877ec8ep1aee93jsna6512be9ae22",
+                "X-RapidAPI-Host": "youtube-mp36.p.rapidapi.com",
+              },
+            }
+          );
+
+          const data = await res.json();
+
+          if (data.status === "ok" && data.link) {
+            currentAudioUrl.value = data.link;
+          } else {
+            apiError.value = "Failed to convert video.";
+          }
+        } catch (err) {
+          apiError.value = "API Error: " + err.message;
+        } finally {
+          loading.value = false;
+        }
+      };
+
       const handleDelete = async () => {
         await deleteDoc();
-        // await deleteImage(playlist.value.filePath);
         router.push({ name: "Home" });
       };
 
@@ -95,60 +170,64 @@
         console.log("Song removed from playlist");
       };
 
-      return { error, playlist, ownership, handleDelete, handleClick };
+      return {
+        error,
+        playlist,
+        ownership,
+        handleDelete,
+        handleClick,
+        playSong,
+        currentAudioUrl,
+        apiError,
+        loading,
+      };
     },
   };
 </script>
 
-<style>
+<style scoped>
   .playlist-details {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 80px;
-  }
-  .cover {
-    overflow: hidden;
-    border-radius: 20px;
-    position: relative;
-    padding: 160px;
-  }
-  .cover img {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 100%;
-    min-height: 100%;
-    max-width: 200%;
-    max-height: 200%;
+    padding: 20px;
   }
   .playlist-info {
-    text-align: center;
+    margin-bottom: 30px;
   }
-  .playlist-info h2 {
-    text-transform: capitalize;
-    font-size: 28px;
+  .cover img {
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+  }
+  .song-list {
     margin-top: 20px;
   }
-  .playlist-info p {
-    margin-bottom: 20px;
-  }
-  .username {
-    color: #999;
-  }
-  .description {
-    text-align: left;
-  }
   .single-song {
+    border-bottom: 1px solid #ccc;
     padding: 10px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px dashed var(--secondary);
-    margin-bottom: 20px;
+  }
+  .details {
+    flex: 1;
   }
   .play-btn {
-    position: absolute;
-    right: 106px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .audio-player {
+    width: 100%;
+    margin-top: 20px;
+  }
+  .loading {
+    color: #555;
+    margin-top: 10px;
+  }
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+  .gap {
+    display: flex;
+    gap: 10px;
   }
 </style>
