@@ -6,11 +6,22 @@
     >
       Add Songs
     </button>
+
     <form
       v-if="showForm"
       @submit.prevent="handleSubmit"
+      class="song-form"
     >
-      <h4>Add a New Song</h4>
+      <div class="form-header">
+        <h4>Add a New Song</h4>
+        <button
+          type="button"
+          class="close-btn"
+          @click="showForm = false"
+        >
+          ✖
+        </button>
+      </div>
       <input
         type="text"
         placeholder="Song title"
@@ -22,6 +33,12 @@
         placeholder="Artist"
         required
         v-model="artist"
+      />
+      <input
+        type="url"
+        placeholder="YouTube URL"
+        required
+        v-model="url"
       />
       <button>Add</button>
     </form>
@@ -37,23 +54,29 @@
     setup(props) {
       const title = ref("");
       const artist = ref("");
+      const url = ref("");
       const showForm = ref(false);
       const { updateDoc } = useDocument("playlists", props.playlist.id);
 
       const handleSubmit = async () => {
         const newSong = {
+          id: Math.floor(Math.random() * 1000000),
           title: title.value,
           artist: artist.value,
-          id: Math.floor(Math.random() * 1000000),
+          url: url.value,
         };
-        const res = await updateDoc({
+
+        await updateDoc({
           songs: [...props.playlist.songs, newSong],
         });
+
+        // Clear form inputs
         title.value = "";
         artist.value = "";
+        url.value = "";
       };
 
-      return { title, artist, showForm, handleSubmit };
+      return { title, artist, url, showForm, handleSubmit };
     },
   };
 </script>
@@ -66,5 +89,17 @@
   form {
     max-width: 100%;
     text-align: left;
+  }
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+  }
+
+  .close-btn:hover {
+    color: #333;
   }
 </style>

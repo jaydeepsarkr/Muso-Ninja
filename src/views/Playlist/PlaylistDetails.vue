@@ -38,7 +38,9 @@
         <div class="details">
           <h3>{{ song.title }}</h3>
           <p>{{ song.artist }}</p>
+          <p>{{ song.url }}</p>
         </div>
+        <button class="play-btn">▶</button>
         <button
           v-if="ownership"
           @click="handleClick(song.id)"
@@ -144,5 +146,9 @@
     align-items: center;
     border-bottom: 1px dashed var(--secondary);
     margin-bottom: 20px;
+  }
+  .play-btn {
+    position: absolute;
+    right: 106px;
   }
 </style>
