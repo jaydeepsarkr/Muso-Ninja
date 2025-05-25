@@ -28,13 +28,13 @@
 </script>
 <style scoped>
   .home {
-    max-width: 900px;
+    /* max-width: 900px; */
     margin: 0 auto;
     padding: 2rem;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f9f9f9;
     border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); */
   }
 
   .error {

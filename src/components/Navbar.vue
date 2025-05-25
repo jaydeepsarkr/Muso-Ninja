@@ -13,14 +13,16 @@
           <router-link
             :to="{ name: 'CreatePlaylist' }"
             class="btn"
+            id="create-playlist"
             >Create Playlist</router-link
           >
           <router-link
             :to="{ name: 'UserPlaylists' }"
             class="btn"
+            id="my-playlists"
             >My Playlists</router-link
           >
-          <span
+          <span id="user-info"
             >Hi There, <strong>{{ user.displayName }}</strong></span
           >
           <button @click="handleLogout">Logout</button>
@@ -29,11 +31,13 @@
           <router-link
             :to="{ name: 'Login' }"
             class="btn"
+            id="login"
             >Login</router-link
           >
           <router-link
             :to="{ name: 'Signup' }"
             class="btn"
+            id="signup"
             >Sign Up</router-link
           >
         </div>
@@ -78,6 +82,7 @@
     padding: 16px 10px;
     margin-bottom: 60px;
     background: #f8f8f8;
+    position: relative;
   }
 
   nav {
@@ -86,6 +91,7 @@
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
   }
 
   nav h1 {
@@ -131,11 +137,12 @@
       margin: 0 0 10px 0;
     }
 
-    nav .links {
-      flex-direction: column;
-      align-items: flex-start;
-      width: 100%;
-      margin-left: 0;
+    nav .links,
+    .gap {
+      display: grid;
+      /* grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); */
+      gap: 20px; /* Horizontal + vertical spacing */
+      padding: 20px; /* Space inside the wrapper */
     }
 
     nav .links a,
@@ -149,6 +156,25 @@
     span {
       border: none;
       padding: 0;
+    }
+    #create-playlist {
+      padding: 20px;
+      margin-right: 35px;
+    }
+    #my-playlists {
+      padding: 20px;
+    }
+    #login {
+      padding: 24px;
+      margin-right: 35px;
+    }
+    #signup {
+      padding: 24px;
+    }
+    #user-info {
+      padding: 24px;
+      margin-right: 35px;
+      font-size: 25px;
     }
   }
 </style>

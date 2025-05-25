@@ -1,25 +1,27 @@
 <template>
-  <div
-    v-for="playlist in playlists"
-    :key="playlist.id"
-  >
-    <router-link :to="{ name: 'PlaylistDetails', params: { id: playlist.id } }">
-      <div class="single">
-        <div class="thumbnail">
+  <div class="playlist-wrapper">
+    <div
+      v-for="playlist in playlists"
+      :key="playlist.id"
+      class="card"
+    >
+      <router-link
+        :to="{ name: 'PlaylistDetails', params: { id: playlist.id } }"
+        class="card-link"
+      >
+        <div class="card-thumbnail">
           <img
             :src="playlist.coverUrl"
             alt="playlist cover"
           />
         </div>
-        <div class="info">
-          <h3>{{ playlist.title }}</h3>
-          <p>Created by {{ playlist.userName }}</p>
+        <div class="card-body">
+          <h3 class="card-title">{{ playlist.title }}</h3>
+          <p class="card-creator">By {{ playlist.userName }}</p>
+          <p class="card-count">{{ playlist.songs.length }} Songs</p>
         </div>
-        <div class="song-number">
-          <p>{{ playlist.songs.length }}</p>
-        </div>
-      </div>
-    </router-link>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -30,35 +32,76 @@
 </script>
 
 <style scoped>
-  .single {
-    display: flex;
-    align-items: center;
+  .playlist-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
     padding: 20px;
-    border-radius: 10px;
-    background: rgb(248, 245, 245);
-    margin: 16px 0;
-    transition: all ease 0.2s;
   }
-  .single:hover {
-    box-shadow: 1px 2px 3px rgba(50, 50, 50, 0.05);
-    transform: scale(1.02);
-    transition: all ease 0.2s;
-  }
-  .thumbnail {
-    max-width: 100px;
-    max-height: 100px;
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
-    border-radius: 10px;
   }
-  img {
-    max-width: 150%;
-    max-height: 150%;
-    display: block;
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.1);
   }
-  .info {
-    margin: 0 30px;
+
+  .card-link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
   }
-  .song-number {
-    margin-left: auto;
+
+  .card-thumbnail img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+  }
+
+  .card-creator {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .card-count {
+    font-size: 0.85rem;
+    color: #888;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    .card-thumbnail img {
+      height: 140px;
+    }
+
+    .card-body {
+      padding: 14px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+    }
   }
 </style>
