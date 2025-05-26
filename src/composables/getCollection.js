@@ -6,18 +6,19 @@ import {
   orderBy,
   where,
   onSnapshot,
+  limit,
 } from "firebase/firestore";
 
 // Firestore instance
 const db = getFirestore();
 
-const getCollection = (collectionName, querys = []) => {
+const getCollection = (collectionName, querys = [], options = {}) => {
   const documents = ref(null);
   const error = ref(null);
 
   const constraints = [];
 
-  // Safely build constraints
+  // Build where clauses from the query array
   if (Array.isArray(querys)) {
     querys.forEach((q, index) => {
       if (Array.isArray(q) && q.length === 3 && !q.includes(undefined)) {
@@ -31,8 +32,14 @@ const getCollection = (collectionName, querys = []) => {
     });
   }
 
-  // Always order by createdAt last
-  constraints.push(orderBy("createdAt"));
+  // Always order by createdAt (if not already ordered)
+  // Firestore requires the field used in orderBy to exist on all docs for consistent ordering.
+  // Optionally, you can add limit to reduce data load.
+  constraints.push(orderBy("createdAt", options.order || "desc"));
+
+  if (options.limit) {
+    constraints.push(limit(options.limit));
+  }
 
   try {
     const q = query(collection(db, collectionName), ...constraints);
@@ -43,10 +50,13 @@ const getCollection = (collectionName, querys = []) => {
         const results = [];
         snapshot.docs.forEach((doc) => {
           const data = doc.data();
-          if (data.createdAt) {
+
+          // Only push documents that have createdAt field to avoid inconsistencies
+          if (data.createdAt !== undefined) {
             results.push({ ...data, id: doc.id });
           }
         });
+
         documents.value = results;
         error.value = null;
       },
