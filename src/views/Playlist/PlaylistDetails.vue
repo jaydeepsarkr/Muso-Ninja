@@ -28,12 +28,7 @@
         >
           ▶ Play All Songs
         </button>
-        <button
-          v-if="ownership"
-          @click="handleDelete"
-        >
-          Delete Playlist
-        </button>
+        <button @click="handleDelete">Delete Playlist</button>
       </div>
     </div>
 
@@ -58,19 +53,11 @@
           >
             ▶
           </button>
-          <button
-            v-if="ownership"
-            @click="handleClick(song.id)"
-          >
-            delete
-          </button>
+          <button @click="handleClick(song.id)">delete</button>
         </div>
       </div>
 
-      <AddSong
-        :playlist="playlist"
-        v-if="ownership"
-      />
+      <AddSong :playlist="playlist" />
     </div>
 
     <!-- Audio player and messages -->
@@ -117,13 +104,13 @@
       const loading = ref(false);
       const apiError = ref("");
 
-      const ownership = computed(() => {
-        return (
-          playlist.value &&
-          user.value &&
-          user.value.uid == playlist.value.userId
-        );
-      });
+      // const ownership = computed(() => {
+      //   return (
+      //     playlist.value &&
+      //     user.value &&
+      //     user.value.uid == playlist.value.userId
+      //   );
+      // });
 
       const extractVideoID = (url) => {
         const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})(?:&|$)/);
