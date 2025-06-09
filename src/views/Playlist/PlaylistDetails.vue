@@ -239,7 +239,7 @@
     margin-bottom: 30px;
   }
   .cover img {
-       width: 369px;
+        width: 150px;
     height: auto;
     border-radius: 8px;
   }
