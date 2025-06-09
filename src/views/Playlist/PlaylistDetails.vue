@@ -276,4 +276,13 @@
     display: flex;
     gap: 10px;
   }
+    .audio-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: #fff;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  }
 </style>
