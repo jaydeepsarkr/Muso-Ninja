@@ -28,6 +28,7 @@
         >
           ▶ Play All Songs
         </button>
+
         <button
           v-if="ownership"
           @click="handleDelete"
@@ -35,6 +36,10 @@
           Delete Playlist
         </button>
       </div>
+      <AddSong
+        :playlist="playlist"
+        v-if="ownership"
+      />
     </div>
 
     <!-- song list -->
@@ -66,11 +71,6 @@
           </button>
         </div>
       </div>
-
-      <AddSong
-        :playlist="playlist"
-        v-if="ownership"
-      />
     </div>
 
     <!-- Audio player and messages -->
@@ -239,7 +239,7 @@
     margin-bottom: 30px;
   }
   .cover img {
-        width: 150px;
+    width: 150px;
     height: auto;
     border-radius: 8px;
   }
@@ -276,7 +276,7 @@
     display: flex;
     gap: 10px;
   }
-    .audio-player {
+  .audio-player {
     position: fixed;
     bottom: 0;
     left: 0;
